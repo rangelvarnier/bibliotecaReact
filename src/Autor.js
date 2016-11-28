@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import CustomInput from './componentes/CustomInput';
 import SubmitButton from './componentes/SubmitButton';
+import PubSub from 'pubsub-js';
 
 export class FormularioAutor extends Component {
 
@@ -30,7 +31,7 @@ export class FormularioAutor extends Component {
             if (!res.ok)
                 throw new Error(res.statusText);
             return res;
-        }).then(res => res.json()).then(result => this.props.callBackAtualizaListagem(result));
+        }).then(res => res.json()).then(novaLista => PubSub.publish('atualiza-lista-autores', novaLista));
     }
 
     setNome(evento) {
@@ -77,9 +78,9 @@ export class TabelaAutores extends Component {
                                     <td>{autor.nome}</td>
                                     <td>{autor.email}</td>
                                 </tr>
-                                );
-                            })
-                        }
+                            );
+                        })
+}
                     </tbody>
                 </table>
             </div>
@@ -103,16 +104,18 @@ export default class AutorBox extends Component {
                 throw new Error(res.statusText);
             return res;
         }).then(res => res.json()).then(result => this.setState({lista: result}));
+
+        PubSub.subscribe('atualiza-lista-autores', (topico, novaLista) => this.setState({lista: novaLista}));
     }
 
     atualizaListagem(novaLista) {
-        this.setState({lista: novaLista})
+        this.setState({lista: novaLista});
     }
 
     render() {
         return (
             <div>
-                <FormularioAutor callBackAtualizaListagem={this.atualizaListagem}/>
+                <FormularioAutor/>
                 <TabelaAutores lista={this.state.lista}/>
             </div>
         );

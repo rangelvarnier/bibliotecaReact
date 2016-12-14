@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import CustomInput from './componentes/CustomInput';
 import SubmitButton from './componentes/SubmitButton';
 import PubSub from 'pubsub-js';
+import $ from 'jquery';
+import TratadorErros from './TratadorErros';
 
 export class FormularioAutor extends Component {
 
@@ -20,18 +22,25 @@ export class FormularioAutor extends Component {
 
     enviaForm(evento) {
         evento.preventDefault();
-        return fetch('http://localhost:8080/api/autores', {
-            headers: {
-                'Content-type': 'application/json'
+        $.ajax({
+            url: 'http://localhost:8080/api/autores',
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'post',
+            data: JSON.stringify({nome: this.state.nome, email: this.state.email, senha: this.state.senha}),
+            success: function(novaListagem) {
+                PubSub.publish('atualiza-lista-autores', novaListagem);
+                this.setState({nome: '', email: '', senha: ''});
+            }.bind(this),
+            error: function(resposta) {
+                if (resposta.status === 400) {
+                    new TratadorErros().publicaErros(resposta.responseJSON.errors);
+                }
             },
-            method: 'post',
-            body: JSON.stringify({nome: this.state.nome, email: this.state.email, senha: this.state.senha})
-        }).then(res => {
-            console.log(res.statusText);
-            if (!res.ok)
-                throw new Error(res.statusText);
-            return res;
-        }).then(res => res.json()).then(novaLista => PubSub.publish('atualiza-lista-autores', novaLista));
+            beforeSend: function() {
+                PubSub.publish('limpa-validacao', {});
+            }
+        });
     }
 
     setNome(evento) {
@@ -74,13 +83,13 @@ export class TabelaAutores extends Component {
                     <tbody>
                         {this.props.lista.map(autor => {
                             return (
-                                <tr key={autor.id}>
-                                    <td>{autor.nome}</td>
-                                    <td>{autor.email}</td>
-                                </tr>
-                            );
-                        })
-}
+                                    <tr key={autor.id}>
+                                        <td>{autor.nome}</td>
+                                        <td>{autor.email}</td>
+                                    </tr>
+                                );
+                            })
+                        }
                     </tbody>
                 </table>
             </div>
@@ -115,8 +124,13 @@ export default class AutorBox extends Component {
     render() {
         return (
             <div>
-                <FormularioAutor/>
-                <TabelaAutores lista={this.state.lista}/>
+                <div className="header">
+                    <h1>Cadastro de Autores</h1>
+                </div>
+                <div>
+                    <FormularioAutor/>
+                    <TabelaAutores lista={this.state.lista}/>
+                </div>
             </div>
         );
     }

@@ -15,9 +15,7 @@ export class FormularioAutor extends Component {
             senha: ''
         };
         this.enviaForm = this.enviaForm.bind(this);
-        this.setNome = this.setNome.bind(this);
-        this.setEmail = this.setEmail.bind(this);
-        this.setSenha = this.setSenha.bind(this);
+        this.salvarAlteracao = this.salvarAlteracao.bind(this);
     }
 
     enviaForm(evento) {
@@ -43,25 +41,19 @@ export class FormularioAutor extends Component {
         });
     }
 
-    setNome(evento) {
-        this.setState({nome: evento.target.value});
-    }
-
-    setEmail(evento) {
-        this.setState({email: evento.target.value});
-    }
-
-    setSenha(evento) {
-        this.setState({senha: evento.target.value});
+    salvarAlteracao(nomeInput, evento) {
+        let campoSendoAlterado = {};
+        campoSendoAlterado[nomeInput] = evento.target.value;
+        this.setState(campoSendoAlterado);
     }
 
     render() {
         return (
             <div className="pure-form pure-form-aligned">
                 <form className="pure-form pure-form-aligned" onSubmit={this.enviaForm} method="post">
-                    <CustomInput label="Nome" id="nome" type="text" name="nome" value={this.state.nome} onChange={this.setNome}/>
-                    <CustomInput label="E-mail" id="email" type="text" name="email" value={this.state.email} onChange={this.setEmail}/>
-                    <CustomInput label="Senha" id="senha" type="text" name="senha" value={this.state.senha} onChange={this.setSenha}/>
+                    <CustomInput label="Nome" id="nome" type="text" name="nome" value={this.state.nome} onChange={this.salvarAlteracao.bind(this,'nome')}/>
+                    <CustomInput label="E-mail" id="email" type="text" name="email" value={this.state.email} onChange={this.salvarAlteracao.bind(this,'email')}/>
+                    <CustomInput label="Senha" id="senha" type="text" name="senha" value={this.state.senha} onChange={this.salvarAlteracao.bind(this,'senha')}/>
                     <SubmitButton label="Gravar"/>
                 </form>
             </div>
@@ -83,13 +75,13 @@ export class TabelaAutores extends Component {
                     <tbody>
                         {this.props.lista.map(autor => {
                             return (
-                                    <tr key={autor.id}>
-                                        <td>{autor.nome}</td>
-                                        <td>{autor.email}</td>
-                                    </tr>
-                                );
-                            })
-                        }
+                                <tr key={autor.id}>
+                                    <td>{autor.nome}</td>
+                                    <td>{autor.email}</td>
+                                </tr>
+                            );
+                        })
+}
                     </tbody>
                 </table>
             </div>

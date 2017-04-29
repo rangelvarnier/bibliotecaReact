@@ -51,9 +51,9 @@ export class FormularioAutor extends Component {
         return (
             <div className="pure-form pure-form-aligned">
                 <form className="pure-form pure-form-aligned" onSubmit={this.enviaForm} method="post">
-                    <CustomInput label="Nome" id="nome" type="text" name="nome" value={this.state.nome} onChange={this.salvarAlteracao.bind(this,'nome')}/>
-                    <CustomInput label="E-mail" id="email" type="text" name="email" value={this.state.email} onChange={this.salvarAlteracao.bind(this,'email')}/>
-                    <CustomInput label="Senha" id="senha" type="text" name="senha" value={this.state.senha} onChange={this.salvarAlteracao.bind(this,'senha')}/>
+                    <CustomInput label="Nome" id="nome" type="text" name="nome" value={this.state.nome} onChange={this.salvarAlteracao.bind(this, 'nome')}/>
+                    <CustomInput label="E-mail" id="email" type="text" name="email" value={this.state.email} onChange={this.salvarAlteracao.bind(this, 'email')}/>
+                    <CustomInput label="Senha" id="senha" type="text" name="senha" value={this.state.senha} onChange={this.salvarAlteracao.bind(this, 'senha')}/>
                     <SubmitButton label="Gravar"/>
                 </form>
             </div>
